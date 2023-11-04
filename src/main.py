@@ -7,8 +7,8 @@ def main() -> FastAPI:
     return app
 
 
-def run():
-    uvicorn.run('src:main')
+def run() -> None:
+    uvicorn.run('src:main', reload=True)
 
 
 if __name__ == "__main__":
