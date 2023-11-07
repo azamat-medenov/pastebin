@@ -6,21 +6,22 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.infrastructure.database.models.base import Base
-
+from src.application.services.uuid7 import uuid7
 
 if typing.TYPE_CHECKING:
     from src.infrastructure.database.models.user import User
 
+
 class Entry(Base):
     __tablename__ = 'entry'
 
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid7)
     text: Mapped[str]
     link_to_cloud: Mapped[str]
     link: Mapped[str]
-    date_created: Mapped[datetime] = mapped_column(d)
+    date_created: Mapped[datetime] = mapped_column(default=datetime.now())
     expire_on: Mapped[datetime]
-    author_fk: Mapped[str] = mapped_column(ForeignKey('user.username'))
+    author_fk: Mapped[str] = mapped_column(ForeignKey('user.id'))
 
     author: Mapped['User'] = relationship(back_populates='entry', cascade='all, delete-orphan')
 

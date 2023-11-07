@@ -30,9 +30,10 @@ class CreateEntry(BaseModel):
     text: str
     expire_on: datetime
 
-    @field_validator
+    @field_validator('expire_on')
     @classmethod
-    def check_expire_date(cls, value: datetime):
+    def check_expire_date(cls, value: datetime) -> datetime:
         if value < datetime.now():
             raise ValidationError('expire date must not be over')
-        return cls.expire_on
+        return value
+

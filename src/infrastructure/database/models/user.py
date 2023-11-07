@@ -1,9 +1,11 @@
 import typing
+import uuid
 from typing import List
 
 from src.infrastructure.database.models.base import Base
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from src.application.services.uuid7 import uuid7
 
 if typing.TYPE_CHECKING:
     from src.infrastructure.database.models.entry import Entry
@@ -12,10 +14,11 @@ if typing.TYPE_CHECKING:
 class User(Base):
     __tablename__ = 'user'
 
-    username: Mapped[str] = mapped_column(String(25), primary_key=True)
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid7)
+    username: Mapped[str] = mapped_column(String(25))
     name: Mapped[str] = mapped_column(String(25))
     email: Mapped[str]
-    password: Mapped[str]
+    hashed_password: Mapped[str]
 
     entries: Mapped[List['Entry']] = relationship(backref='author')
 
