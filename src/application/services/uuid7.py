@@ -44,7 +44,7 @@ def uuid7(devDebugs: bool = False, returnType: str = 'hex') -> UUID:
     fractional_part = round((timestamp % subsec_decimal_divisor) / subsec_decimal_divisor, subsec_decimal_digits)
     subsec = round(fractional_part * (2 ** subsec_bits))
 
-    if devDebugs == True:
+    if devDebugs is True:
         print("Timestamp: " + str(timestamp))
         print("Sec: " + str(sec))
         print("Subsec Int: " + str(subsec))
@@ -66,11 +66,11 @@ def uuid7(devDebugs: bool = False, returnType: str = 'hex') -> UUID:
 
     if timestamp <= _last_v7timestamp:
         sequenceCounter = int(sequenceCounter) + 1
-        if devDebugs == True:
+        if devDebugs is True:
             print("Sequence: Incrementing Sequence to {0}".format(str(sequenceCounter)))
     if timestamp > _last_v7timestamp:
         sequenceCounter = 0
-        if devDebugs == True:
+        if devDebugs is True:
             print("Sequence: Setting to {0}".format(str(sequenceCounter)))
 
     sequenceCounterBin = f'{sequenceCounter:08b}'
@@ -85,7 +85,7 @@ def uuid7(devDebugs: bool = False, returnType: str = 'hex') -> UUID:
 
     UUIDv7_bin = unixts + subsec_a + uuidVersion + subsec_b + uuidVariant + subsec_seq_node
     UUIDv7_int = int(UUIDv7_bin, 2)
-    if devDebugs == True:
+    if devDebugs is True:
         if UUIDv7_int < _last_uuid_int and _last_uuid_int != 0:
             print("Error: UUID went Backwards!")
             print("UUIDv7 Last: " + str(_last_uuid_int))
@@ -96,7 +96,7 @@ def uuid7(devDebugs: bool = False, returnType: str = 'hex') -> UUID:
     UUIDv7_formatted = '-'.join(
         [UUIDv7_hex[:8], UUIDv7_hex[8:12], UUIDv7_hex[12:16], UUIDv7_hex[16:20], UUIDv7_hex[20:32]])
 
-    if devDebugs == True:
+    if devDebugs is True:
         print("UUIDv7 Con: {0}|{1}|{2}|{3}|{4}|{5}".format(unixts,
                                                            subsec_a,
                                                            uuidVersion,

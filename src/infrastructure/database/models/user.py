@@ -15,12 +15,12 @@ class User(Base):
     __tablename__ = 'user'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid7)
-    username: Mapped[str] = mapped_column(String(25))
+    username: Mapped[str] = mapped_column(String(25), unique=True)
     name: Mapped[str] = mapped_column(String(25))
     email: Mapped[str]
     hashed_password: Mapped[str]
 
-    entries: Mapped[List['Entry']] = relationship(backref='author')
+    entries: Mapped[List['Entry']] = relationship(back_populates='author', cascade='all, delete-orphan')
 
     def __str__(self) -> str:
         return f'{self.username=}, {self.name=}'
