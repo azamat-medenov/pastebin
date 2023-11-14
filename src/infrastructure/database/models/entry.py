@@ -21,9 +21,9 @@ class Entry(Base):
     link: Mapped[str]
     date_created: Mapped[datetime] = mapped_column(default=datetime.now())
     expire_on: Mapped[datetime]
-    author_fk: Mapped[str] = mapped_column(ForeignKey('user.id'))
+    author_fk: Mapped[uuid.UUID] = mapped_column(ForeignKey('user.id'), nullable=False, index=True)
 
-    author: Mapped['User'] = relationship(back_populates='entry', cascade='all, delete-orphan')
+    author: Mapped['User'] = relationship(back_populates='entries')
 
     def __str__(self) -> str:
         return f'{self.id=}, {self.author=}'
