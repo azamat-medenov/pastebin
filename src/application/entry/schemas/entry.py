@@ -1,16 +1,15 @@
-from datetime import datetime
 import typing
+from datetime import datetime
 import uuid
 
 from pydantic import (
     BaseModel,
     ConfigDict,
     ValidationError,
-    field_validator,
+    field_validator
 )
-
 if typing.TYPE_CHECKING:
-    from src.application.schemas.user import UserSchema
+    from src.application.user.schemas.user import UserSchema
 
 
 class EntrySchema(BaseModel):
@@ -21,6 +20,7 @@ class EntrySchema(BaseModel):
     date_created: datetime
     expire_on: datetime
     author_fk: str
+
     author: 'UserSchema'
 
     model_config = ConfigDict(from_attributes=True)
@@ -36,4 +36,5 @@ class CreateEntry(BaseModel):
         if value < datetime.now():
             raise ValidationError('expire date must not be over')
         return value
+
 
