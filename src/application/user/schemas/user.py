@@ -10,15 +10,15 @@ if typing.TYPE_CHECKING:
 
 
 class UserBaseSchema(BaseModel):
-    username: str = Field(max_length=20)
+    username: str = Field(max_length=20, min_length=6)
     email: EmailStr
-    name: str = Field(max_length=20)
+    name: str = Field(max_length=20, min_length=6)
 
     model_config = ConfigDict(from_attributes=True)
 
 
 class UserCreateSchema(UserBaseSchema):
-    password: str = Field(max_length=30)
+    password: str = Field(max_length=30, min_length=8)
 
 
 class UserOutSchema(UserBaseSchema):
