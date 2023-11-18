@@ -162,3 +162,10 @@ cython_debug/
 #.idea/
 
 /.env
+/.mypy_cache/
+/.pytest_cache/
+/.ruff_cache/
+/pytest.ini
+/mypy.ini
+/tests/
+/example.env
