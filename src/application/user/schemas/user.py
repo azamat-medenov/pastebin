@@ -25,6 +25,10 @@ class UserOutSchema(UserBaseSchema):
     id: uuid.UUID
 
 
-class UserSchema(UserCreateSchema, UserOutSchema):
+class UserSchema(UserOutSchema):
     hashed_password: str
     entries: List['EntrySchema'] = []
+
+
+class UserWithPasswordSchema(UserSchema, UserCreateSchema):
+    pass
