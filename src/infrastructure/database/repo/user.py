@@ -2,7 +2,7 @@ import uuid
 from typing import Type, Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, insert, or_
+from sqlalchemy import select, insert, or_, Row
 
 from src.application.user.schemas.user import (
     UserCreateSchema, UserSchema)
@@ -14,10 +14,17 @@ class UserRepo:
         self.session = session
         self.model: Type[User] = User
 
-    async def get_user(self, user_id: uuid.UUID) -> User | None:
-        query = select(self.model).filter_by(id=user_id)
-        res = await self.session.scalars(query)
-        return res.first()
+    async def get_user(self, **fields: Any) -> User:
+        """
+        :param fields: id or username or email
+        """
+        for field in fields:
+            if field not in ('id', 'username', 'email'):
+                del fields[field]
+
+        query = select(self.model).filter_by(**fields)
+        res = await self.session.execute(query)
+        return res.scalar_one()
 
     async def is_user_exists(self, schema: UserCreateSchema) -> bool:
         query = select(self.model).where(or_(
@@ -26,7 +33,7 @@ class UserRepo:
         res = await self.session.execute(query)
         return res.first() is not None
 
-    async def create_user(self, schema: UserSchema) -> dict[str, Any]:
+    async def create_user(self, schema: UserSchema) -> Any:
         stmt = insert(self.model).values(
             id=schema.id,
             username=schema.username,
@@ -41,4 +48,4 @@ class UserRepo:
 
         res = await self.session.execute(stmt)
         await self.session.commit()
-        return res.one()._asdict()
+        return res.one()
