@@ -22,7 +22,7 @@ async def create_user(
         user: UserCreateSchema,
         session: Annotated[AsyncSession, Depends(Stub(AsyncSession))]
 ) -> UserOutSchema:
-    return await _create_user(UserRepo, user, session)
+    return await _create_user(UserRepo(session), user)
 
 
 @user_router.get('/{user_id}')
@@ -30,4 +30,4 @@ async def get_user(
         user_id: uuid.UUID,
         session: Annotated[AsyncSession, Depends(Stub(AsyncSession))]
 ) -> UserOutSchema:
-    return await _get_user(UserRepo, user_id, session)
+    return await _get_user(UserRepo(session), user_id)
