@@ -25,5 +25,8 @@ class Entry(Base):
 
     author: Mapped['User'] = relationship(back_populates='entries')
 
-    def __str__(self) -> str:
-        return f'{self.id=}, {self.author=}'
+    def __repr__(self) -> str:
+        return f'''{self.id=}, {self.author=}
+        {self.link_to_cloud=}, {self.link=}, 
+        {self.date_created=}
+        '''

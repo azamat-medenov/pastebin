@@ -22,5 +22,8 @@ class User(Base):
 
     entries: Mapped[List['Entry']] = relationship(back_populates='author', cascade='all, delete-orphan')
 
-    def __str__(self) -> str:
-        return f'{self.username=}, {self.name=}'
+    def __repr__(self) -> str:
+        return f'''{self.username=}, {self.name=}
+                {self.email=}, {self.entries=}, 
+                {self.hashed_password=}
+                '''
