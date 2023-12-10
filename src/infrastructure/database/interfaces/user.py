@@ -1,11 +1,9 @@
-import uuid
 from typing import Protocol, Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import Row
 
 from src.infrastructure.database.models.user import User
-from src.application.user.schemas.user import UserCreateSchema, UserSchema
+from src.application.user.schemas.user import UserCreateDTO, UserDTO
 
 
 class UserRepo(Protocol):
@@ -13,6 +11,6 @@ class UserRepo(Protocol):
 
     async def get_user(self, **fields: Any) -> User : ...
 
-    async def is_user_exists(self, schema: UserCreateSchema) -> bool: ...
+    async def is_user_exists(self, schema: UserCreateDTO) -> bool: ...
 
-    async def create_user(self, schema: UserSchema) -> User: ...
+    async def create_user(self, schema: UserDTO) -> User: ...

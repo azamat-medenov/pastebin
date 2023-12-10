@@ -1,4 +1,4 @@
 from .entry import (
-    EntrySchema,
+    EntryDTO,
     CreateEntry
 )

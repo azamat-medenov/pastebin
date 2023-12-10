@@ -1,6 +1,6 @@
 from .user import (
-    UserSchema,
-    UserOutSchema,
-    UserBaseSchema,
-    UserCreateSchema)
+    UserDTO,
+    UserOutDTO,
+    UserBaseDTO,
+    UserCreateDTO)
 from .token import Token

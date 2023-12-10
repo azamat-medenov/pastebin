@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.presentation.api.providers.stub import Stub
 from src.infrastructure.database.repo.user import UserRepo
 from src.application.user.schemas.user import (
-    UserOutSchema, UserCreateSchema)
+    UserOutDTO, UserCreateDTO)
 from src.application.user.user import _create_user, _get_user
 
 user_router = APIRouter(
@@ -19,9 +19,9 @@ user_router = APIRouter(
 @user_router.post(
     '/', status_code=status.HTTP_201_CREATED)
 async def create_user(
-        user: UserCreateSchema,
+        user: UserCreateDTO,
         session: Annotated[AsyncSession, Depends(Stub(AsyncSession))]
-) -> UserOutSchema:
+) -> UserOutDTO:
     return await _create_user(UserRepo(session), user)
 
 
@@ -29,5 +29,5 @@ async def create_user(
 async def get_user(
         user_id: uuid.UUID,
         session: Annotated[AsyncSession, Depends(Stub(AsyncSession))]
-) -> UserOutSchema:
+) -> UserOutDTO:
     return await _get_user(UserRepo(session), user_id)

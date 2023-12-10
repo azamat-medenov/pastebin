@@ -9,10 +9,10 @@ from pydantic import (
     field_validator
 )
 if typing.TYPE_CHECKING:
-    from src.application.user.schemas.user import UserSchema
+    from src.application.user.schemas.user import UserDTO
 
 
-class EntrySchema(BaseModel):
+class EntryDTO(BaseModel):
     id: uuid.UUID
     text: str
     link_to_cloud: str
@@ -21,9 +21,11 @@ class EntrySchema(BaseModel):
     expire_on: datetime
     author_fk: str
 
-    author: 'UserSchema'
-
     model_config = ConfigDict(from_attributes=True)
+
+
+class EntryWithAuthorDTO(EntryDTO):
+    author: 'UserDTO'
 
 
 class CreateEntry(BaseModel):

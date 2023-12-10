@@ -1,14 +1,11 @@
-import uuid
-
-import pytest
 from httpx import AsyncClient
 
-from src.application.user.schemas.user import UserCreateSchema
+from src.application.user.schemas.user import UserCreateDTO
 
 
 async def test_create_user(
         ac: AsyncClient,
-        create_user_schema: UserCreateSchema,
+        create_user_schema: UserCreateDTO,
         erase_users):
     response = await ac.post('/users/', json={
         **create_user_schema.model_dump()
@@ -23,7 +20,7 @@ async def test_create_user(
 
 async def test_get_user(
         ac: AsyncClient,
-        create_user_schema: UserCreateSchema,
+        create_user_schema: UserCreateDTO,
         erase_users):
     user_id = await test_create_user(ac, create_user_schema, erase_users)
     res = await ac.get(f'/users/{user_id}')

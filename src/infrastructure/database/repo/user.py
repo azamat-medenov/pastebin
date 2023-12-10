@@ -1,11 +1,10 @@
-import uuid
 from typing import Type, Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, insert, or_, Row
+from sqlalchemy import select, insert, or_
 
 from src.application.user.schemas.user import (
-    UserCreateSchema, UserSchema)
+    UserCreateDTO, UserDTO)
 from src.infrastructure.database.models.user import User
 
 
@@ -26,14 +25,14 @@ class UserRepo:
         res = await self.session.execute(query)
         return res.scalar_one()
 
-    async def is_user_exists(self, schema: UserCreateSchema) -> bool:
+    async def is_user_exists(self, schema: UserCreateDTO) -> bool:
         query = select(self.model).where(or_(
             self.model.username == schema.username,
             self.model.email == schema.email))
         res = await self.session.execute(query)
         return res.first() is not None
 
-    async def create_user(self, schema: UserSchema) -> Any:
+    async def create_user(self, schema: UserDTO) -> Any:
         stmt = insert(self.model).values(
             id=schema.id,
             username=schema.username,
