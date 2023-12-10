@@ -3,6 +3,7 @@ from typing import Type, Any
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, insert, or_
 
+from src.application.services.specification import Specification
 from src.application.user.schemas.user import (
     UserCreateDTO, UserDTO)
 from src.infrastructure.database.models.user import User
@@ -13,22 +14,19 @@ class UserRepo:
         self.session = session
         self.model: Type[User] = User
 
-    async def get_user(self, **fields: Any) -> User:
-        """
-        :param fields: id or username or email
-        """
-        for field in fields:
-            if field not in ('id', 'username', 'email'):
-                del fields[field]
-
-        query = select(self.model).filter_by(**fields)
+    async def get_user(
+            self, specification: Specification) -> User:
+        query = select(self.model).filter_by(
+            **specification.is_specified()
+        )
         res = await self.session.execute(query)
         return res.scalar_one()
 
     async def is_user_exists(self, schema: UserCreateDTO) -> bool:
         query = select(self.model).where(or_(
             self.model.username == schema.username,
-            self.model.email == schema.email))
+            self.model.email == schema.email)
+        )
         res = await self.session.execute(query)
         return res.first() is not None
 
@@ -48,3 +46,13 @@ class UserRepo:
         res = await self.session.execute(stmt)
         await self.session.commit()
         return res.one()
+
+    async def get_hashed_password(
+            self, specification: Specification) -> str:
+        query = (select(self.model.hashed_password).
+                 filter_by(**specification.is_specified()))
+
+        res = await self.session.execute(query)
+        return res.scalar_one()
+
+

@@ -9,6 +9,10 @@ from fastapi.exceptions import HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from email_validator import validate_email, EmailNotValidError
 
+from src.application.services.specification import (
+    IDSpecification,
+    EmailSpecification,
+    UsernameSpecification,)
 from src.application.services.uuid7 import uuid7
 from src.application.services.hash_password import (
     hash_password, bcrypt_context)
@@ -29,7 +33,7 @@ oauth2_bearer = OAuth2PasswordBearer(tokenUrl='users/token')
 async def _get_user(
         repo: UserRepo,
         user_id: uuid.UUID) -> UserOutDTO:
-    user = await repo.get_user(id=user_id)
+    user = await repo.get_user(IDSpecification(user_id))
     if user is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail='USER DOES NOT EXIST')
 
@@ -59,9 +63,9 @@ async def check_login(
     try:
         validate_email(login)
     except EmailNotValidError:
-        user = await repo.get_user(username=login)
+        user = await repo.get_user(UsernameSpecification(login))
     else:
-        user = await repo.get_user(email=login)
+        user = await repo.get_user(EmailSpecification(login))
     if user is not None:
         return UserDTO.model_validate(user)
 
@@ -79,3 +83,4 @@ async def authenticate_user(
     raise HTTPException(
         status.HTTP_401_UNAUTHORIZED,
         detail='BAD CREDENTIALS')
+
