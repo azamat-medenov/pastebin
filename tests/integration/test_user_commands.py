@@ -29,3 +29,20 @@ async def test_get_user(
     assert create_user_schema.email == res.json().get('email')
     assert create_user_schema.username == res.json().get('username')
 
+
+async def test_login(
+        ac: AsyncClient,
+        create_user_schema: UserCreateDTO,
+        erase_users):
+    await test_create_user(ac, create_user_schema, erase_users)
+    res = await ac.post('/users/login', data={
+        'username': create_user_schema.email,
+        'password': create_user_schema.password
+    })
+    assert res.status_code == 200, 'login with email'
+    res = await ac.post('/users/login', data={
+        'username': create_user_schema.username,
+        'password': create_user_schema.password
+    })
+    assert res.status_code == 200, 'login with username'
+
