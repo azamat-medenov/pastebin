@@ -15,12 +15,12 @@ class UserRepo:
         self.model: Type[User] = User
 
     async def get_user(
-            self, specification: Specification) -> User:
+            self, specification: Specification) -> User | None:
         query = select(self.model).filter_by(
             **specification.is_specified()
         )
         res = await self.session.execute(query)
-        return res.scalar_one()
+        return res.scalar_one_or_none()
 
     async def is_user_exists(self, schema: UserCreateDTO) -> bool:
         query = select(self.model).where(or_(

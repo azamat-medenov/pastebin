@@ -31,4 +31,7 @@ class UserOutDTO(UserBaseDTO):
 
 class UserDTO(UserOutDTO):
     hashed_password: str
+
+
+class UserRelDTO(UserDTO):
     entries: List['EntryDTO'] = []
