@@ -1,5 +1,5 @@
 import typing
-from datetime import datetime
+from datetime import datetime, timedelta
 import uuid
 
 from pydantic import (
@@ -15,7 +15,6 @@ if typing.TYPE_CHECKING:
 class EntryDTO(BaseModel):
     id: uuid.UUID
     text: str
-    link_to_cloud: str
     link: str
     date_created: datetime
     expire_on: datetime
@@ -35,8 +34,6 @@ class CreateEntry(BaseModel):
     @field_validator('expire_on')
     @classmethod
     def check_expire_date(cls, value: datetime) -> datetime:
-        if value < datetime.now():
-            raise ValidationError('expire date must not be over')
+        if value < datetime.now() or datetime.now() + timedelta(7) < value:
+            raise ValidationError('Expire date must not be over or more than a week')
         return value
-
-
