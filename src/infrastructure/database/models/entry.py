@@ -16,7 +16,6 @@ class Entry(Base):
     __tablename__ = "entry"
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid7)
-    text: Mapped[str]
     date_created: Mapped[datetime] = mapped_column(default=datetime.now())
     expire_on: Mapped[datetime]
     author_fk: Mapped[uuid.UUID] = mapped_column(
