@@ -15,7 +15,7 @@ def main() -> FastAPI:
 
 
 def run() -> None:
-    uvicorn.run(r'main:main', reload=True, port=5678)
+    uvicorn.run(r"main:main", reload=True, port=8000)
 
 
 if __name__ == "__main__":
