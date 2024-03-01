@@ -1,11 +1,14 @@
 import typing
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
-from pydantic import BaseModel, ConfigDict, ValidationError, field_validator
+from fastapi.exceptions import RequestValidationError
+from pydantic import BaseModel, ConfigDict, field_validator
 
 if typing.TYPE_CHECKING:
     from src.application.user.schemas.user import UserDTO
+
+UTC_6 = timezone(timedelta(hours=6))
 
 
 class EntryDTO(BaseModel):
@@ -28,7 +31,16 @@ class CreateEntry(BaseModel):
 
     @field_validator("expire_on")
     @classmethod
-    def check_expire_date(cls, value: datetime) -> datetime:
-        if value < datetime.now() or datetime.now() + timedelta(7) < value:
-            raise ValidationError("Expire date must not be over or more than a week")
+    def check_utc(cls, value: datetime) -> datetime:
+        if value.tzinfo is None:
+            raise RequestValidationError("Expire date must have timezone")
         return value
+
+    @field_validator("expire_on")
+    @classmethod
+    def check_expire_date(cls, value: datetime) -> datetime:
+        if value < datetime.now(UTC_6) or datetime.now(UTC_6) + timedelta(7) < value:
+            raise RequestValidationError(
+                "Expire date must not be over or more than a week"
+            )
+        return value.astimezone(tz=UTC_6).replace(tzinfo=None)
