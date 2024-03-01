@@ -7,13 +7,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-def get_bucket_name() -> str:
-    name = os.getenv("AWS_S3_BUCKET")
-    if not name:
-        raise ValueError("Could not get bucket name")
-    return name
-
-
 class S3Singleton:
     __instance = None
 
@@ -35,3 +28,7 @@ class S3Singleton:
         if not name:
             raise ValueError("Could not get bucket name")
         return name
+
+
+def s3() -> S3Singleton:
+    return S3Singleton()
