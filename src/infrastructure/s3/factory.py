@@ -30,5 +30,5 @@ class S3Singleton:
         return name
 
 
-def s3() -> S3Singleton:
+def get_s3() -> S3Singleton:
     return S3Singleton()
