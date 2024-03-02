@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Any, Type
 from uuid import UUID
 
@@ -14,7 +15,9 @@ class EntryRepo:
         self.model: Type[Entry] = Entry
 
     async def get_entry(self, key: UUID) -> Entry | None:
-        query = select(self.model).filter_by(id=key)
+        query = select(self.model).where(
+            self.model.id == key, self.model.expire_on > datetime.now()
+        )
         res = await self.session.execute(query)
         return res.scalar_one_or_none()
 
