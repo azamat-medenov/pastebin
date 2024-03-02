@@ -15,3 +15,10 @@ async def s3_entry_upload(
             ContentEncoding="UTF-8",
             Key=str(key) + ".txt",
         )
+
+
+async def s3_get_entry(bucket: str, key: UUID, s3_client: S3Client) -> str:
+    async with s3_client as s3:
+        res = await s3.get_object(Bucket=bucket, Key=str(key) + ".txt")
+        content = await res["Body"].read()
+        return content.decode()
