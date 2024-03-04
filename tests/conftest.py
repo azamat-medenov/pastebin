@@ -2,26 +2,27 @@ import asyncio
 from typing import AsyncGenerator
 
 import pytest
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-from sqlalchemy.pool import NullPool
-from httpx import AsyncClient
 from fastapi.testclient import TestClient
+from httpx import AsyncClient
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.pool import NullPool
 
+from src.infrastructure.database.models.base import Base
 from src.presentation.api.providers.stub import Stub
 from src.presentation.main import main
-from src.infrastructure.database.models.base import Base
-
-from tests.setup.env import (DB_USER_TEST,
-                             DB_PASSWORD_TEST,
-                             DB_HOST_TEST,
-                             DB_NAME_TEST,
-                             DB_PORT_TEST)
-
+from tests.setup.env import (
+    DB_HOST_TEST,
+    DB_NAME_TEST,
+    DB_PASSWORD_TEST,
+    DB_PORT_TEST,
+    DB_USER_TEST,
+)
 
 pytest_plugins = [
     "tests.fixtures.user",
+    "tests.fixtures.entry",
     "tests.fixtures.db",
-  ]
+]
 
 
 DATABASE_URL_TEST = f"postgresql+asyncpg://{DB_USER_TEST}:{DB_PASSWORD_TEST}@{DB_HOST_TEST}:{DB_PORT_TEST}/{DB_NAME_TEST}"
@@ -49,15 +50,14 @@ async def erase_db():
         await conn.run_sync(Base.metadata.drop_all)
 
 
-@pytest.fixture(autouse=True, scope='session')
+@pytest.fixture(autouse=True, scope="session")
 async def prepare_db():
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
 
 
-
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def event_loop(request):
     loop = asyncio.get_event_loop_policy().new_event_loop()
     yield loop
@@ -67,7 +67,7 @@ def event_loop(request):
 client = TestClient(app)
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 async def ac() -> AsyncGenerator[AsyncClient, None]:
-    async with AsyncClient(app=app, base_url='http://test') as ac:
+    async with AsyncClient(app=app, base_url="http://test") as ac:
         yield ac
