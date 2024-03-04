@@ -1,9 +1,9 @@
 import os
-from datetime import datetime, timedelta, timezone
 
 import aioboto3
 import pytest
 from httpx import AsyncClient
+from types_aiobotocore_s3.client import S3Client
 
 from src.infrastructure.s3.factory import S3Singleton
 from src.presentation.api.providers.stub import Stub
@@ -36,11 +36,9 @@ class MockS3Singleton:
         return name
 
 
-def get_mock_s3():
-    return MockS3Singleton()
-
-
-app.dependency_overrides[Stub(S3Singleton)] = get_mock_s3
+@pytest.fixture()
+async def s3_client():
+    return MockS3Singleton().client
 
 
 @pytest.fixture(scope="session")
@@ -58,23 +56,43 @@ async def mock_boto():
     server.stop()
 
 
-@pytest.fixture()
-async def s3_client():
-    return aioboto3.Session().client("s3", endpoint_url=os.getenv("AWS_ENDPOINT_URL"))
+@pytest.fixture(autouse=True, scope="session")
+async def create_bucket(mock_boto):
+    s3 = MockS3Singleton().client
+    async with s3 as s3:
+        await s3.create_bucket(
+            Bucket=os.getenv("aws_s3_bucket"),
+            CreateBucketConfiguration={
+                "LocationConstraint": os.getenv("AWS_REGION_NAME")
+            },
+        )
+
+
+app.dependency_overrides[Stub(S3Singleton)] = s3_client
 
 
 async def test_create_entry(
-    s3_client, ac: AsyncClient, erase_users, create_user_schema
+    s3_client: S3Client, ac: AsyncClient, erase_users, create_user_schema, entry
 ):
     access_token = await test_login(ac, create_user_schema, erase_users)
     res = await ac.post(
         "/entry",
-        json={
-            "text": "testtext",
-            "expire_on": (
-                datetime.now(tz=timezone(timedelta(hours=6))) + timedelta(hours=6)
-            ).isoformat(),
-        },
+        json=entry,
         headers={"Authorization": f"Bearer {access_token}"},
     )
+    id = res.json()
     assert res.status_code == 201
+    async with s3_client as s3:
+        res = await s3.get_object(Bucket=os.getenv("AWS_S3_BUCKET"), Key=id + ".txt")
+        content = await res["Body"].read()
+        assert content.decode() == entry["text"]
+    return id
+
+
+async def test_get_entry(
+    s3_client: S3Client, ac: AsyncClient, erase_users, create_user_schema, entry
+):
+    id = await test_create_entry(s3_client, ac, erase_users, create_user_schema, entry)
+    res = await ac.get("/entry", params={"entry_id": id})
+    assert res.status_code == 200
+    assert res.json() == entry["text"]
