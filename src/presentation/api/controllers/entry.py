@@ -18,7 +18,7 @@ entry_router = APIRouter(prefix="/entry", tags=["entry"])
 load_dotenv()
 
 
-@entry_router.post("/", status_code=status.HTTP_201_CREATED)
+@entry_router.post("", status_code=status.HTTP_201_CREATED)
 async def create_entry(
     entry: CreateEntry,
     user_id: Annotated[UUID, Depends(get_current_user)],
@@ -30,7 +30,7 @@ async def create_entry(
     return res_entry.id
 
 
-@entry_router.get("/", status_code=status.HTTP_200_OK)
+@entry_router.get("", status_code=status.HTTP_200_OK)
 async def get_entry(
     entry_id: UUID,
     db_session: Annotated[AsyncSession, Depends(Stub(AsyncSession))],
