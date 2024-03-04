@@ -34,6 +34,7 @@ pytest-asyncio = "^0.21.1"
 httpx = "^0.25.1"
 types-aioboto3 = { extras = ["s3"], version = "^12.2.0" }
 pre-commit = "^3.6.2"
+moto = {extras = ["server"], version = "^5.0.2"}
 
 [tool.black]
 line-length = 88
