@@ -1,8 +1,8 @@
 import uvicorn
 from fastapi import FastAPI
 
-from presentation.api.providers.imports import setup_imports
 from src.presentation.api.controllers.main import setup_controllers
+from src.presentation.api.providers.imports import setup_imports
 from src.presentation.api.providers.providers import setup_providers
 
 
