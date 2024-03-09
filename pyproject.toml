@@ -19,6 +19,8 @@ passlib = { extras = ["bcrypt"], version = "^1.7.4" }
 types-passlib = "^1.7.7.13"
 aioboto3 = "^12.2.0"
 pydantic = {extras = ["mypy"], version = "^2.6.1"}
+gunicorn = "^21.2.0"
+types-aioboto3 = {extras = ["s3"], version = "^12.3.0"}
 
 
 [tool.poetry.group.nondev.dependencies]
@@ -32,7 +34,6 @@ mypy = {extras = ["pydantic"], version = "^1.8.0"}
 [tool.poetry.group.dev.dependencies]
 pytest-asyncio = "^0.21.1"
 httpx = "^0.25.1"
-types-aioboto3 = { extras = ["s3"], version = "^12.2.0" }
 pre-commit = "^3.6.2"
 moto = {extras = ["server"], version = "^5.0.2"}
 
