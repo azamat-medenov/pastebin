@@ -163,3 +163,4 @@ ruff/
 #.idea/
 
 !/.env
+!/.env.non-dev
