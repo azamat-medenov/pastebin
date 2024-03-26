@@ -4,22 +4,37 @@ services:
     image: postgres:15
     container_name: db_app
     env_file:
-      - .env
+      - .env.non-dev
 
+  redis:
+    image: redis:alpine
+    container_name: redis
+    command: --port 5370
+    expose:
+      - 5370
+  cron:
+    build:
+      context: .
+    env_file:
+      - .env.non-dev
+    container_name: cron
+    command: [ "/app/docker/arq.sh" ]
+    depends_on:
+      - fastapi
   fastapi:
     build:
       context: .
     env_file:
-      - .env
+      - .env.non-dev
     container_name: fastapi
-    command: [ "/app/app.sh" ]
+    command: [ "/app/docker/app.sh" ]
     ports:
       - 8000:8000
     depends_on:
       - db
+      - redis
     expose:
       - 8000
-    restart: always
   nginx:
     image: nginx:latest
     container_name: nginx
