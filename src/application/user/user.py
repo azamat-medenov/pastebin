@@ -10,6 +10,7 @@ from fastapi.exceptions import HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 
+from src.application.entry.schemas.entry import UTC_6
 from src.application.services.hash_password import bcrypt_context, hash_password
 from src.application.services.specification import (
     EmailSpecification,
@@ -25,7 +26,7 @@ UsernameOrEmail: TypeAlias = str
 
 load_dotenv()
 
-JWT_EXPIRES = timedelta(hours=1)
+JWT_EXPIRES = timedelta(seconds=10)
 SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
 
@@ -66,7 +67,11 @@ async def check_login(login: UsernameOrEmail, repo: UserRepo) -> UserDTO | None:
 
 def create_access_token(username: str, user_id: uuid.UUID, expires: timedelta) -> str:
     return jwt.encode(
-        {"username": username, "exp": datetime.now() + expires, "id": str(user_id)},
+        {
+            "username": username,
+            "exp": datetime.now(tz=UTC_6) + expires,
+            "id": str(user_id),
+        },
         SECRET_KEY,
         ALGORITHM,
     )
@@ -87,8 +92,13 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]) -> uui
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username = payload.get("username")
         user_id = payload.get("id")
-        if username is None or user_id is None:
-            raise JWTError
+        exp = payload.get("exp")
+        if (
+            username is None
+            or user_id is None
+            or datetime.now(tz=UTC_6) > datetime.fromtimestamp(timestamp=exp, tz=UTC_6)
+        ):
+            raise JWTError()
         return user_id
     except JWTError:
         raise UnAuthorizedError()
