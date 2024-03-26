@@ -21,6 +21,7 @@ aioboto3 = "^12.2.0"
 pydantic = {extras = ["mypy"], version = "^2.6.1"}
 gunicorn = "^21.2.0"
 types-aioboto3 = {extras = ["s3"], version = "^12.3.0"}
+arq = "^0.25.0"
 
 
 [tool.poetry.group.nondev.dependencies]
