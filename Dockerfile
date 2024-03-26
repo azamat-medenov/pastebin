@@ -28,3 +28,5 @@ RUN poetry config virtualenvs.create false
 RUN poetry install --only main
 
 COPY . .
+
+RUN chmod a+x docker/*.sh
